@@ -29,6 +29,7 @@ services:
       DB_SQLITE_FILE: "/data/database.sqlite"
     volumes:
       - nginx_proxy_manager:/data
+      - ./nginx-proxy-manager/letsencrypt:/etc/letsencrypt
     ports:
       - 80:80
       - 443:443
