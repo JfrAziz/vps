@@ -6,11 +6,40 @@ networks:
   monitoring:
     name: monitoring
 
+volumes:
+  nginx_proxy_manager:
+    name: nginx_proxy_manager
+  portainer:
+    name: portainer
+  grafana:
+    name: grafana
+  prometheus:
+    name: prometheus
+  
 services:
+  nginx_proxy_manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx_proxy_manager
+    profiles:
+      - basic
+    restart: unless-stopped
+    networks:
+      - nginx
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - nginx_proxy_manager:/data
+    ports:
+      - 80:80
+      - 443:443
+      - 81:81
+
   portainer:
     image: 'portainer/portainer-ce:latest'
     container_name: portainer
     restart: unless-stopped
+    profiles:
+      - basic
     networks:
       - nginx
     security_opt:
@@ -18,9 +47,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./portainer/data:/data
-    ports:
-      - 9000:9000
+      - portainer:/data
+    expose:
+      - 9000
 
   grafana:
     image: 'grafana/grafana:latest'
@@ -39,27 +68,11 @@ services:
       - GR_AUTH_DISABLE_SIGNOUT_MENU=true
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     volumes:
-      - ./grafana:/var/lib/grafana
+      - grafana:/var/lib/grafana
     depends_on:
       - prometheus
-    ports:
-      - 3000:3000
-
-  nginx_proxy_manager:
-    image: 'jc21/nginx-proxy-manager:latest'
-    container_name: nginx_proxy_manager
-    restart: unless-stopped
-    networks:
-      - nginx
-    environment:
-      DB_SQLITE_FILE: "/data/database.sqlite"
-    volumes:
-      - ./nginx-proxy-manager/data:/data
-      - ./nginx-proxy-manager/letsencrypt:/etc/letsencrypt
-    ports:
-      - 80:80
-      - 443:443
-      - 81:81
+    expose:
+      - 3000
 
   prometheus:
     image: 'prom/prometheus:latest'
@@ -69,8 +82,8 @@ services:
     networks:
       - monitoring
     volumes:
+      - prometheus:/prometheus
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/data:/prometheus
     depends_on:
       - cadvisor
       - node_exporter
