@@ -2,8 +2,9 @@ version: '3'
 
 networks:
   nginx:
-  default:
-    name: base
+    name: nginx
+  monitoring:
+    name: monitoring
 
 services:
   portainer:
@@ -28,6 +29,7 @@ services:
       - monitoring
     networks:
       - nginx
+      - monitoring
     environment:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SECURITY_ALLOW_EMBEDDING=true
@@ -64,6 +66,8 @@ services:
     container_name: prometheus
     profiles:
       - monitoring
+    networks:
+      - monitoring
     volumes:
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/data:/prometheus
@@ -78,6 +82,8 @@ services:
     container_name: cadvisor
     profiles:
       - monitoring
+    networks:
+      - monitoring
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -90,6 +96,8 @@ services:
     image: 'quay.io/prometheus/node-exporter:latest'
     container_name: node_exporter
     profiles:
+      - monitoring
+    networks:
       - monitoring
     restart: unless-stopped
     command:
