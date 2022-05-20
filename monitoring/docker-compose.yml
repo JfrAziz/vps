@@ -28,6 +28,7 @@ services:
       - grafana:/var/lib/grafana
     depends_on:
       - prometheus
+      - loki
     expose:
       - 3000
 
