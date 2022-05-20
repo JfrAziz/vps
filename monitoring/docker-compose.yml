@@ -80,12 +80,10 @@ services:
       - 9100
 
   loki:
-    image: 'grafana/loki:2.5.0'
+    image: 'grafana/loki:main'
     container_name: loki
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
-    depends_on:
-      - promtail
     volumes:
       - ./loki.yml:/etc/loki/local-config.yml
     networks:
@@ -94,10 +92,12 @@ services:
       - 3100
 
   promtail:
-    image: 'grafana/promtail:2.5.0'
+    image: 'grafana/promtail:main'
     container_name: promtail
     restart: unless-stopped
     command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
     volumes:
       - /var/log:/var/log
       - ./promtail.yml:/etc/promtail/config.yml
