@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 0
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: https://$InstanceID:$GrafanaCloudAPIKey@$logs-endpoint.grafana.net/api/prom/push
+
+scrape_configs:
+  - job_name: local
+    static_configs:
+      - targets:
+        - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/*log
+
+  - job_name: docker 
+    pipeline_stages:
+      - docker: {}
+    static_configs:
+      - labels:
+          job: docker
+          __path__: /var/lib/docker/containers/*/*-json.log

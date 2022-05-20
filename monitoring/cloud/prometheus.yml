@@ -1,5 +1,5 @@
 global:
-  scrape_interval:     15s
+  scrape_interval: 15s
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -13,3 +13,9 @@ scrape_configs:
   - job_name: 'cadvisor'
     static_configs:
     - targets: ['cadvisor:8080']
+
+remote_write:
+  - url: https://<Prometheus url>.grafana.net/api/prom/push
+    basic_auth:
+      username: <username>
+      password: <Your Grafana.com API Key>

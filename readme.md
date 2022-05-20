@@ -62,7 +62,7 @@ this tutorial run on Debian 11 with min RAM 2GB (monitoring tools is kind a heav
   sudo usermod -aG docker $USER
   ```
 
-- install nginx-proxy-manager & portainer, just run this [docker-compose.yml](./docker-compose.yml) with `docker-compose --profile basic up -d`
+- install nginx-proxy-manager & portainer, just run this [docker-compose.yml](./docker-compose.yml) with `docker-compose up -d`
 
   ```terminal
   docker compose up -d
@@ -79,12 +79,8 @@ this tutorial run on Debian 11 with min RAM 2GB (monitoring tools is kind a heav
 
 - run monitoring tools
 
-  if you run docker-compose before, you don't run any monitoring tools (grafana+prometheus+node exporter+cadvisor), to run it use
+  just run [docker-compose.yml](./monitoring/docker-compose.yml) on monitoring folder.
 
   ```
-  docker compose --profile monitoring up -d 
+  docker compose  up -d 
   ```
-
-  I have modified dashboard, just copy [dashboard.json](./dashboard.json) to grafana
-
-  ![image](./img/grafana.png)

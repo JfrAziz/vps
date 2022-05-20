@@ -3,25 +3,17 @@ version: '3'
 networks:
   nginx:
     name: nginx
-  monitoring:
-    name: monitoring
 
 volumes:
   nginx_proxy_manager:
     name: nginx_proxy_manager
   portainer:
     name: portainer
-  grafana:
-    name: grafana
-  prometheus:
-    name: prometheus
   
 services:
   nginx_proxy_manager:
     image: 'jc21/nginx-proxy-manager:latest'
     container_name: nginx_proxy_manager
-    profiles:
-      - basic
     restart: unless-stopped
     networks:
       - nginx
@@ -39,8 +31,6 @@ services:
     image: 'portainer/portainer-ce:latest'
     container_name: portainer
     restart: unless-stopped
-    profiles:
-      - basic
     networks:
       - nginx
     security_opt:
@@ -51,78 +41,4 @@ services:
       - portainer:/data
     expose:
       - 9000
-
-  grafana:
-    image: 'grafana/grafana:latest'
-    container_name: grafana
-    profiles:
-      - monitoring
-    networks:
-      - nginx
-      - monitoring
-    environment:
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SECURITY_ALLOW_EMBEDDING=true
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_NAME="Main Org."
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GR_AUTH_DISABLE_SIGNOUT_MENU=true
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-    volumes:
-      - grafana:/var/lib/grafana
-    depends_on:
-      - prometheus
-    expose:
-      - 3000
-
-  prometheus:
-    image: 'prom/prometheus:latest'
-    container_name: prometheus
-    profiles:
-      - monitoring
-    networks:
-      - monitoring
-    volumes:
-      - prometheus:/prometheus
-      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - cadvisor
-      - node_exporter
-    expose:
-      - 9090
-
-  cadvisor:
-    image: 'gcr.io/cadvisor/cadvisor:latest'
-    container_name: cadvisor
-    profiles:
-      - monitoring
-    networks:
-      - monitoring
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    expose:
-      - 8080
-
-  node_exporter:
-    image: 'quay.io/prometheus/node-exporter:latest'
-    container_name: node_exporter
-    profiles:
-      - monitoring
-    networks:
-      - monitoring
-    restart: unless-stopped
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    expose:
-      - 9100
 
