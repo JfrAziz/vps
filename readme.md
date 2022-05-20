@@ -86,3 +86,5 @@ this tutorial run on Debian 11 with min RAM 2GB (monitoring tools is kind a heav
   ```
 
   I have modified dashboard, just copy [dashboard.json](./dashboard.json) to grafana
+
+  ![image](./img/grafana.png)
